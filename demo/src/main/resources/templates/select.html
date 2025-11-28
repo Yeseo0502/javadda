@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>재밌따</title>
+    <style>
+        @font-face {
+            font-family: 'PFStardustS';
+            src: url('/fonts/PFStardustS.ttf') format('truetype');
+        }
+
+        /* PFStardust 3.0 EXTRABOLD 글꼴을 불러옵니다. */
+        @font-face {
+            font-family: 'PFStardustExtraBold';
+            src: url('/fonts/PFStardustExtraBold.ttf') format('truetype');
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f5dc 0%, #e8f5e9 100%);
+            font-family: 'Noto Sans KR', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: bold;
+            color: #4a7c59;
+            text-shadow: 2px 2px 0px #fff, 4px 4px 0px rgba(74, 124, 89, 0.3);
+            letter-spacing: -2px;
+        }
+
+        .time {
+            font-size: 72px;
+            font-weight: bold;
+            color: #5a6c5a;
+            font-family: 'Courier New', monospace;
+        }
+
+        .title {
+            text-align: center;
+            font-size: 32px;
+            margin-bottom: 50px;
+            color: #333;
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            padding: 25px 40px;
+            font-size: 20px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .button:hover {
+            background: #f0f0f0;
+            border-color: #4a7c59;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .button-full {
+            grid-column: 1 / -1;
+            max-width: 500px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .mascot {
+            position: fixed;
+            bottom: 0;
+            right: 40px;
+            width: 200px;
+            height: auto;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        @media (max-width: 768px) {
+            .button-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .logo {
+                font-size: 36px;
+            }
+            
+            .time {
+                font-size: 48px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .button {
+                font-size: 18px;
+                padding: 20px 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">자바따</div>
+            <div class="time" id="clock">12:30</div>
+        </div>
+
+        <h1 class="title">방과후 A반</h1>
+
+        <div class="button-grid">
+            <button class="button">함쌤의 책 한 편</button>
+            <button class="button">정예서의 티켓팅 클래스</button>
+            <button class="button">장세은의 게임 클래스</button>
+            <button class="button">다연쌤의 DB 클래스</button>
+            <button class="button">보경쌤의 쿠킹 클래스</button>
+            <button class="button">규정쌤의 코딩 테스트</button>
+            <button class="button button-full">지웅쌤의 심리 테스트</button>
+        </div>
+    </div>
+
+    <img src="/images/sunglass.png" class="mascot" alt="Mascot">
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            document.getElementById('clock').textContent = `${hours}:${minutes}`;
+        }
+
+        updateClock();
+        setInterval(updateClock, 1000);
+
+        document.querySelectorAll('.button').forEach(button => {
+            button.addEventListener('click', () => {
+                alert(button.textContent + ' 선택됨!');
+            });
+        });
+    </script>
+</body>
+</html>

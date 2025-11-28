@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>메크로 의심</title>
+    <style>
+        /* 폰트 정의 */
+        @font-face {
+            font-family: 'PFStardustS';
+            src: url('/fonts/PFStardustS.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'PFStardustExtraBold';
+            src: url('/fonts/PFStardustExtraBold.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PFStardustS', sans-serif; 
+        }
+
+        body {
+            /* 경고의 의미로 배경색을 붉은색 계열로 변경 */
+            background: linear-gradient(135deg, #FFD0D0 0%, #FFB0B0 100%); 
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            /* 테두리 색상 경고에 맞게 변경 */
+            border: 5px solid #CC0000; 
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            min-height: 600px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 80px;
+        }
+
+        .logo {
+            font-size: 50px;
+            font-weight: bold;
+            color: #CC0000; /* 로고 색상 변경 */
+            font-family: 'PFStardustExtraBold', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .time {
+            font-size: 60px;
+            font-weight: bold;
+            color: #45532B;
+            /* 카운트다운을 위해 폰트 변경 */
+            font-family: 'PFStardustExtraBold', sans-serif; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-top: 100px;
+        }
+
+        .main-message {
+            font-size: 90px;
+            font-weight: bold;
+            color: #FF0000;
+            margin-bottom: 30px;
+            font-family: 'PFStardustExtraBold', sans-serif;
+            letter-spacing: 10px;
+        }
+
+        .sub-message {
+            font-size: 45px;
+            font-weight: bold;
+            color: #FF0000;
+            font-family: 'PFStardustExtraBold', sans-serif;
+        }
+
+        .sunglass-emoji {
+            position: absolute;
+            right: 60px;
+            bottom: 50px;
+            width: 180px;
+            height: auto;
+            z-index: 10;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px) rotate(-5deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(-5deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                min-height: 500px;
+            }
+            
+            .header {
+                margin-bottom: 50px;
+            }
+            
+            .logo {
+                font-size: 36px;
+            }
+            
+            .time {
+                font-size: 48px;
+            }
+            
+            .message-container {
+                margin-top: 60px;
+            }
+            
+            .main-message {
+                font-size: 55px;
+                letter-spacing: 5px;
+            }
+            
+            .sub-message {
+                font-size: 30px;
+            }
+            
+            .sunglass-emoji {
+                width: 120px;
+                right: 30px;
+                bottom: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">자바따!</div>
+            <div class="time" id="clock">05:00</div>
+        </div>
+
+        <div class="message-container">
+            <div class="main-message">메크로 의심 됨!</div>
+            <div class="sub-message">다시 로그인 하세요!! <br>3초 뒤 자동으로 이동됩니다.</div>
+        </div>
+        
+        <img src="/images/sunglass.png" alt="선글라스 이모지" class="sunglass-emoji"/>
+    </div>
+
+    <script th:inline="javascript">
+        // 🚨 뒤로 가기 차단 및 로그인 강제 이동 로직 🚨
+        window.history.pushState(null, null, window.location.href); 
+        
+        window.addEventListener('popstate', function() {
+            // 뒤로 가기가 발생하면 무조건 로그인 페이지로 이동시킵니다.
+            window.location.replace('/login'); 
+        });
+        
+        // ⭐ 서버에서 전달받은 사용자 고유의 시간 변수
+        const SERVER_CURRENT_TIME = /*[[${currentTime}]]*/ 0;
+        const SERVER_START_TIME = /*[[${startTime}]]*/ 0;
+        
+        // 브라우저 시간과 서버 시간의 차이 (오차 보정용)
+        const TIME_OFFSET = Date.now() - SERVER_CURRENT_TIME;
+
+        // select.html에서 가져온 상수
+        const CLOCK_INTERVAL = 1000;
+        const INITIAL_LOCK_DURATION_MS = 60 * 1000;
+        const ACTIVE_WINDOW_DURATION_MS = 5 * 60 * 1000;
+
+        const timerDisplay = document.getElementById('clock');
+
+        // ⭐ select.html의 카운트다운 로직으로 대체
+        function manageEnrollmentTimer() {
+            const now = Date.now() - TIME_OFFSET;
+            const startTime = SERVER_START_TIME;
+
+            const lockEndTime = startTime + INITIAL_LOCK_DURATION_MS;
+            const activeEndTime = lockEndTime + ACTIVE_WINDOW_DURATION_MS;
+
+            if (startTime === 0) {
+                 timerDisplay.textContent = '---:---';
+                 return;
+            }
+
+            if (now < lockEndTime) {
+                // 대기 기간 (1분)
+                const remaining = Math.ceil((lockEndTime - now) / 1000);
+                timerDisplay.textContent = `00:${String(remaining).padStart(2, '0')}`;
+            } else if (now >= lockEndTime && now < activeEndTime) {
+                // 활성 기간 (5분)
+                const remaining = Math.ceil((activeEndTime - now) / 1000);
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                // 마감     
+                timerDisplay.textContent = '00:00';
+            }
+        }
+        
+        // 타이머 시작
+        manageEnrollmentTimer();
+        setInterval(manageEnrollmentTimer, CLOCK_INTERVAL);
+
+        // 3.5초 후 로그인 페이지로 자동 이동 (window.location.replace 사용)
+        setTimeout(function() {
+            window.location.replace('/login'); 
+        }, 3500);
+    </script>
+</body>
+</html>

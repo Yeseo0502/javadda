@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>축하합니다!</title>
+    <style>
+        /* 폰트 정의 */
+        @font-face {
+            font-family: 'PFStardustS';
+            src: url('/fonts/PFStardustS.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'PFStardustExtraBold';
+            src: url('/fonts/PFStardustExtraBold.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PFStardustS', sans-serif; 
+        }
+
+        body {
+            background: linear-gradient(135deg, #C8E09D 0%, #A8D080 100%); 
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* 색종이 조각 애니메이션 */
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #f0f;
+            top: -20px;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                top: 100vh;
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            border: 5px solid #629455; 
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            position: relative;
+            min-height: 700px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 40px;
+        }
+
+        .logo {
+            font-size: 50px;
+            font-weight: bold;
+            color: #629455;
+            font-family: 'PFStardustExtraBold', sans-serif;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .time {
+            font-size: 60px;
+            font-weight: bold;
+            color: #45532B;
+            /* 카운트다운에 맞게 폰트를 'Courier New' 대신 PFStardustExtraBold로 변경 */
+            font-family: 'PFStardustExtraBold', sans-serif; 
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .content-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 500px;
+        }
+
+        .celebration-bg {
+            position: absolute;
+            width: 120%;
+            height: 120%;
+            object-fit: contain;
+            opacity: 0.5;
+            z-index: 1;
+        }
+
+        .message-container {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-top: -150px;
+        }
+
+        .main-message {
+            font-size: 100px;
+            font-weight: bold;
+            color: #45532B;
+            margin-bottom: 20px;
+            font-family: 'PFStardustExtraBold', sans-serif;
+            letter-spacing: 15px;
+            -webkit-text-stroke: 4px white;
+            paint-order: stroke fill;
+        }
+
+        .sub-message {
+            font-size: 40px;
+            font-weight: bold;
+            color: #45532B;
+            font-family: 'PFStardustExtraBold', sans-serif;
+            -webkit-text-stroke: 3px white;
+            paint-order: stroke fill;
+        }
+
+        .character-container {
+            position: absolute;
+            right: 50px;
+            bottom: 30px;
+            z-index: 3;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        .speech-bubble {
+            position: absolute;
+            bottom: 180px;
+            right: 270px;
+            background: white;
+            border: 4px solid #45532B;
+            border-radius: 30px;
+            padding: 20px 35px;
+            font-size: 35px;
+            font-weight: bold;
+            color: #45532B;
+            font-family: 'PFStardustExtraBold', sans-serif;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            animation: bubble-bounce 2s ease-in-out infinite;
+            z-index: 3;
+        }
+
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            right: 50px;
+            width: 0;
+            height: 0;
+            border-left: 20px solid transparent;
+            border-right: 0px solid transparent;
+            border-top: 20px solid white;
+            transform: rotate(-10deg);
+        }
+
+        .speech-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            right: 48px;
+            width: 0;
+            height: 0;
+            border-left: 22px solid transparent;
+            border-right: 0px solid transparent;
+            border-top: 22px solid #45532B;
+            transform: rotate(-10deg);
+            z-index: -1;
+        }
+
+        @keyframes bubble-bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .sunglass-emoji {
+            width: 220px;
+            height: auto;
+            animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(5px 5px 10px rgba(0, 0, 0, 0.3));
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+                min-height: 600px;
+            }
+            
+            .logo {
+                font-size: 36px;
+            }
+            
+            .time {
+                font-size: 48px;
+            }
+            
+            .main-message {
+                font-size: 55px;
+                letter-spacing: 8px;
+            }
+            
+            .sub-message {
+                font-size: 24px;
+            }
+
+            .speech-bubble {
+                font-size: 20px;
+                padding: 15px 25px;
+            }
+            
+            .character-container {
+                right: 20px;
+                bottom: 20px;
+                gap: 10px;
+            }
+
+            .sunglass-emoji {
+                width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">자바따!</div>
+            <div class="time" id="clock">05:00</div>
+        </div>
+
+        <div class="content-wrapper">
+            <img src="/images/celebrate.png" alt="축하 배경" class="celebration-bg"/>
+            
+            <div class="message-container">
+                <div class="main-message">축하합니다!</div>
+                <div class="sub-message">당신은 1/2 확률을 뚫고 튕겼습니다</div>
+            </div>
+        </div>
+
+        <div class="character-container">
+            <img src="/images/sunglass.png" alt="선글라스 이모지" class="sunglass-emoji"/>
+        </div>
+        <div class="speech-bubble">축하해 ㅎㅎ~</div>
+    </div>
+
+    <script th:inline="javascript">
+        // 🚨 뒤로 가기 차단 및 로그인 강제 이동 로직 🚨
+        window.history.pushState(null, null, window.location.href); 
+        
+        window.addEventListener('popstate', function() {
+            // 뒤로 가기가 발생하면 무조건 로그인 페이지로 이동시킵니다.
+            window.location.replace('/login'); 
+        });
+        
+        // ⭐ 서버에서 전달받은 사용자 고유의 시간 변수
+        const SERVER_CURRENT_TIME = /*[[${currentTime}]]*/ 0;
+        const SERVER_START_TIME = /*[[${startTime}]]*/ 0;
+        
+        // 브라우저 시간과 서버 시간의 차이 (오차 보정용)
+        const TIME_OFFSET = Date.now() - SERVER_CURRENT_TIME;
+
+        // select.html에서 가져온 상수
+        const CLOCK_INTERVAL = 1000;
+        const INITIAL_LOCK_DURATION_MS = 60 * 1000;
+        const ACTIVE_WINDOW_DURATION_MS = 5 * 60 * 1000;
+
+        const timerDisplay = document.getElementById('clock');
+
+        // ⭐ select.html의 카운트다운 로직
+        function manageEnrollmentTimer() {
+            const now = Date.now() - TIME_OFFSET;
+            const startTime = SERVER_START_TIME;
+
+            const lockEndTime = startTime + INITIAL_LOCK_DURATION_MS;
+            const activeEndTime = lockEndTime + ACTIVE_WINDOW_DURATION_MS;
+
+            if (startTime === 0) {
+                 timerDisplay.textContent = '---:---';
+                 return;
+            }
+
+            if (now < lockEndTime) {
+                // 대기 기간 (1분)
+                const remaining = Math.ceil((lockEndTime - now) / 1000);
+                timerDisplay.textContent = `00:${String(remaining).padStart(2, '0')}`;
+            } else if (now >= lockEndTime && now < activeEndTime) {
+                // 활성 기간 (5분)
+                const remaining = Math.ceil((activeEndTime - now) / 1000);
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                // 마감     
+                timerDisplay.textContent = '00:00';
+            }
+        }
+        
+        // 타이머 시작
+        manageEnrollmentTimer();
+        setInterval(manageEnrollmentTimer, CLOCK_INTERVAL);
+
+        // 색종이 효과
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#ffa07a', '#98d8c8', '#f7dc6f'];
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    confetti.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 5000);
+                }, i * 100);
+            }
+        }
+
+        createConfetti();
+        setInterval(createConfetti, 5000);
+        
+        // 3.5초 후 로그인 페이지로 자동 이동
+        setTimeout(function() {
+            window.location.replace('/login');
+        }, 3500);
+    </script>
+</body>
+</html>

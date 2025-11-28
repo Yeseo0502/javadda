@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자바따</title>
+    <style>
+        @font-face { font-family: 'PFStardustS'; src: url('/fonts/PFStardustS.ttf') format('truetype'); }
+        @font-face { font-family: 'PFStardustExtraBold'; src: url('/fonts/PFStardustExtraBold.ttf') format('truetype'); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'PFStardustS', sans-serif; background: #e8f5d0; min-height: 100vh; padding: 15px; display: flex; justify-content: center; align-items: flex-start; }
+        .container { max-width: 1200px; width: 100%; margin: 0 auto; padding: 30px; }
+        .info-box { background: #fff8e1; border: 2px solid #ffcc80; padding: 10px; border-radius: 8px; font-size: 16px; color: #a87c00; text-align: center; font-weight: bold; margin-bottom: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .logo-group { display: flex; align-items: flex-end; gap: 5px; }
+        .logo { font-size: 50px; font-weight: bold; color: #7a9b57; letter-spacing: 5px; text-shadow: 3px 3px 0px rgba(0,0,0,0.1); font-family: 'PFStardustExtraBold', sans-serif; line-height: 1; }
+        .timer-display { font-size: 60px; font-weight: bold; color: #d14900; font-family: 'PFStardustExtraBold', monospace; letter-spacing: 5px; min-width: 200px; text-align: right; }
+        .content { display: grid; grid-template-columns: 1.2fr 1fr; gap: 30px; align-items: start; }
+        .left-section { background: #a8c989; padding: 0; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .room-info { background: #b5d494; padding: 20px 25px; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .room-name { font-size: 28px; font-weight: bold; color: #3a5a2a; }
+        .class-list { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .class-item { background: white; padding: 22px 25px; border-radius: 50px; font-size: 22px; color: #4a6a3a; cursor: pointer; transition: all 0.3s ease; border: 2px solid transparent; font-weight: 700; font-family: 'PFStardustExtraBold', sans-serif; }
+        .class-item:hover { transform: translateX(5px); border-color: #7a9b57; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); }
+        .right-section { display: flex; flex-direction: column; gap: 20px; position: relative; }
+        .action-button { background: #8fa770; color: white; padding: 28px; border-radius: 20px; font-size: 30px; font-weight: bold; text-align: center; cursor: pointer; transition: all 0.3s ease; border: none; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); font-family: 'PFStardustExtraBold', sans-serif; }
+        .action-button:disabled { opacity: 0.6; cursor: not-allowed; }
+        .action-button:not(:disabled):hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2); }
+        #reset-button { background: #d14900; }
+        .small-buttons { display: flex; gap: 15px; }
+        .small-button { flex: 1; background: #a8c989; color: white; padding: 20px; border-radius: 15px; font-size: 22px; font-weight: bold; text-align: center; cursor: pointer; transition: all 0.3s ease; border: none; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12); font-family: 'PFStardustExtraBold', sans-serif; }
+        .small-button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        .sunglass-image { margin-top: 20px; width: 100%; max-width: 200px; height: auto; align-self: center; }
+        @media (max-width: 1024px) { .content { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="info-box">
+             <span th:text="${username} + '님, 환영합니다!'">회원님, 환영합니다!</span> 수강 신청은 1분 대기 후 5분 동안 활성화됩니다.
+        </div>
+
+        <div class="header">
+            <div class="logo-group">
+                <div class="logo">자바따!</div>
+            </div>
+            <div class="timer-display" id="timer-display">00:00</div>
+        </div>
+
+        <div class="content">
+            <div class="left-section">
+                <div class="room-info"><div class="room-name">방과후 F반</div></div>
+                <div class="class-list">
+                    <div class="class-item">장세은의 게임 클래스</div>
+                    <div class="class-item">정예서의 티켓팅 클래스</div>
+                    <div class="class-item">다연쌤의 DB 클래스</div>
+                    <div class="class-item">보경쌤의 쿠킹 클래스</div>
+                    <div class="class-item">규정쌤의 코딩 테스트</div>
+                    <div class="class-item">함쌤의 책 한 편</div>
+                </div>
+            </div>
+
+            <div class="right-section">
+                <button class="action-button" id="action-button">수강 신청하기 (대기)</button>
+                <button class="action-button" id="reset-button">타이머 리셋 (테스트용)</button>
+                <button class="action-button" id="exchange-button">교환 하기</button>
+                <div class="small-buttons">
+                    <button class="small-button" id="check-button">수업 확인하기</button>
+                    <button class="small-button" id="logout-button">로그아웃 하기</button>
+                </div>
+                
+                <img class="sunglass-image" src="/images/sunglass.png" alt="선글라스">
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const SERVER_CURRENT_TIME = /*[[${currentTime}]]*/ 0;
+        const SERVER_START_TIME = /*[[${startTime}]]*/ 0;
+        const USER_ID = /*[[${userId}]]*/ 'testuser';
+        
+        const TIME_OFFSET = Date.now() - SERVER_CURRENT_TIME;
+        const CLOCK_INTERVAL = 1000;
+        const INITIAL_LOCK_DURATION_MS = 60 * 1000;
+        const ACTIVE_WINDOW_DURATION_MS = 5 * 60 * 1000;
+        
+        const actionButton = document.getElementById('action-button');
+        const resetButton = document.getElementById('reset-button');
+        const exchangeButton = document.getElementById('exchange-button');
+        const checkButton = document.getElementById('check-button');
+        const logoutButton = document.getElementById('logout-button');
+        const timerDisplay = document.getElementById('timer-display');
+
+        // 버튼 클릭 애니메이션
+        document.querySelectorAll('.action-button, .small-button, .class-item').forEach(button => {
+            button.addEventListener('click', function() {
+                if (!this.disabled) {
+                    this.style.transform = 'scale(0.97)';
+                    setTimeout(() => { this.style.transform = ''; }, 150);
+                }
+            });
+        });
+
+        // 1. 수강 신청하기 버튼
+        actionButton.addEventListener('click', function() {
+            if (!this.disabled) {
+                window.location.href = '/check?userId=' + USER_ID;
+            }
+        });
+
+        // 2. 교환하기 버튼
+        exchangeButton.addEventListener('click', function() { 
+            alert('점검중입니다! 조금만 기다려~~'); 
+        });
+        
+        // 3. 수업 확인하기 버튼
+        checkButton.addEventListener('click', function() {  
+            window.location.href = '/list'; 
+        });
+
+        // 4. 로그아웃 버튼
+        logoutButton.addEventListener('click', function() { 
+            if (confirm('로그아웃 하시겠습니까?')) { 
+                alert('로그아웃 되었습니다.'); 
+                window.location.href = '/login'; 
+            } 
+        });
+
+        // 5. 타이머 리셋 버튼 (DB의 enrollment_start_time을 NULL로 변경)
+        resetButton.addEventListener('click', async function() {
+            if (!confirm('타이머를 리셋하시겠습니까?')) {
+                return;
+            }
+
+            try {
+                // 버튼 비활성화
+                resetButton.disabled = true;
+                resetButton.textContent = '리셋 중...';
+
+                const response = await fetch('/api/reset-timer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'userId=' + encodeURIComponent(USER_ID)
+                });
+
+                if (response.ok) {
+                    alert('타이머가 리셋되었습니다! 페이지를 새로고침합니다.');
+                    window.location.reload();
+                } else {
+                    const errorText = await response.text();
+                    alert('타이머 리셋 실패: ' + errorText);
+                    resetButton.disabled = false;
+                    resetButton.textContent = '타이머 리셋 (테스트용)';
+                }
+            } catch (error) {
+                console.error('타이머 리셋 오류:', error);
+                alert('타이머 리셋 중 오류가 발생했습니다: ' + error.message);
+                resetButton.disabled = false;
+                resetButton.textContent = '타이머 리셋 (테스트용)';
+            }
+        });
+
+        // 타이머 관리 함수
+        function manageEnrollmentTimer() {
+            const now = Date.now() - TIME_OFFSET; 
+            const startTime = SERVER_START_TIME; 
+            
+            const lockEndTime = startTime + INITIAL_LOCK_DURATION_MS;
+            const activeEndTime = lockEndTime + ACTIVE_WINDOW_DURATION_MS;
+
+            if (now < lockEndTime) {
+                // 대기 기간 (1분)
+                let remaining = Math.floor((lockEndTime - now) / 1000); 
+                
+                if (remaining <= 0) {
+                    return manageEnrollmentTimer();
+                }
+
+                actionButton.disabled = true;
+                actionButton.textContent = '수강 신청하기 (대기)';
+                timerDisplay.textContent = `00:${String(remaining).padStart(2, '0')}`;
+                
+            } else if (now >= lockEndTime && now < activeEndTime) {
+                // 활성 기간 (5분)
+                let remaining = Math.floor((activeEndTime - now) / 1000);
+                
+                if (remaining <= 0) {
+                    return manageEnrollmentTimer();
+                }
+
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                
+                actionButton.disabled = false;
+                actionButton.textContent = '수강 신청하기';
+                
+            } else {
+                // 마감
+                actionButton.disabled = true;
+                actionButton.textContent = '수강 신청 마감';
+                timerDisplay.textContent = '00:00';
+            }
+        }
+
+        // 타이머 시작
+        manageEnrollmentTimer();
+        setInterval(manageEnrollmentTimer, CLOCK_INTERVAL);
+    </script>
+</body>
+</html>

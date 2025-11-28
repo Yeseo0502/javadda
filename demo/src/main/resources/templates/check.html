@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방과후 수업 선택</title>
+    <style>
+        @font-face {
+            font-family: 'PFStardustS';
+            src: url('/fonts/PFStardustS.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'PFStardustExtraBold';
+            src: url('/fonts/PFStardustExtraBold.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PFStardustS', sans-serif;
+            background: linear-gradient(135deg, #e8f5e0 0%, #f0f8e8 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 50px;
+        }
+
+        .logo {
+            font-family: 'PFStardustExtraBold', sans-serif;
+            font-size: 56px;
+            color: #5a9f4d;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time {
+            font-family: 'PFStardustExtraBold', sans-serif;
+            font-size: 64px;
+            color: #d14900;
+        }
+
+        .title {
+            text-align: center;
+            font-family: 'PFStardustExtraBold', sans-serif;
+            font-size: 42px;
+            color: #1a380e;
+            margin-bottom: 50px;
+        }
+
+        .classes-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .class-btn {
+            background: white;
+            border: 3px solid #d4e8cf;
+            border-radius: 50px;
+            padding: 28px 40px;
+            font-family: 'PFStardustS', sans-serif;
+            font-size: 24px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .class-btn:hover {
+            background: #f5fef3;
+            border-color: #5a9f4d;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(90, 159, 77, 0.15);
+        }
+
+        .class-btn:active {
+            transform: translateY(0);
+        }
+
+        .class-btn.selected {
+            background: #e8f5e0;
+            border-color: #5a9f4d;
+            color: #284f1b;
+            font-weight: bold;
+        }
+
+        .special-btn {
+            grid-column: 1 / -1;
+            max-width: 600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .character {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 200px;
+            height: auto;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .character-img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            background: white;
+            border: 3px solid #5a9f4d;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-size: 28px;
+            color: #5a9f4d;
+            font-family: 'PFStardustExtraBold', sans-serif;
+        }
+
+        .back-btn:hover {
+            background: #e8f5e0;
+            transform: scale(1.1);
+            box-shadow: 0 6px 12px rgba(90, 159, 77, 0.2);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 30px;
+            padding: 50px 60px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: modalPop 0.3s ease;
+        }
+
+        @keyframes modalPop {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .modal-content.full {
+            background: linear-gradient(135deg, #ffe8e0 0%, #ffd4ca 100%);
+            border: 4px solid #d14900;
+        }
+
+        .modal-content.success {
+            background: linear-gradient(135deg, #e8f5e0 0%, #d4eecf 100%);
+            border: 4px solid #5a9f4d;
+        }
+
+        .modal-message {
+            font-family: 'PFStardustExtraBold', sans-serif;
+            font-size: 28px;
+            color: #1a380e;
+            margin-bottom: 30px;
+            line-height: 1.4;
+        }
+
+        .modal-content.full .modal-message {
+            color: #8b2500;
+        }
+
+        .modal-content.success .modal-message {
+            color: #284f1b;
+        }
+
+        .modal-close-btn {
+            background: #5a9f4d;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 40px;
+            font-family: 'PFStardustS', sans-serif;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .modal-close-btn:hover {
+            background: #4a8a3f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+        }
+
+        .modal-content.full .modal-close-btn {
+            background: #d14900;
+        }
+
+        .modal-content.full .modal-close-btn:hover {
+            background: #a33900;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 50px;
+            }
+
+            .time {
+                font-size: 40px;
+            }
+
+            .title {
+                font-size: 35px;
+            }
+
+            .classes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .class-btn {
+                font-size: 18px;
+                padding: 18px 25px;
+            }
+
+            .character {
+                width: 145px;
+                bottom: 20px;
+                right: 20px;
+            }
+
+            .back-btn {
+                width: 50px;
+                height: 50px;
+                top: 20px;
+                left: 20px;
+                font-size: 24px;
+            }
+
+            .modal-content {
+                padding: 40px 30px;
+            }
+
+            .modal-message {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="window.history.back()">←</button>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo">자바따!</div>
+            <div class="time" id="timer-display">05:00</div>
+        </div>
+
+        <h1 class="title">방과후 A반</h1>
+
+        <div class="classes-grid">
+            <button class="class-btn">장세은의 게임 클래스</button>
+            <button class="class-btn">정예서의 티켓팅 클래스</button>
+            <button class="class-btn">다연쌤의 DB 클래스</button>
+            <button class="class-btn">보경쌤의 쿠킹 클래스</button>
+            <button class="class-btn">규정쌤의 코딩 테스트</button>
+            <button class="class-btn">함쌤의 책 한 편</button>
+            <button class="class-btn special-btn">지웅쌤의 심리 테스트</button>
+        </div>
+    </div>
+
+    <div class="character">
+        <img src="/images/sunglass.png" alt="캐릭터" class="character-img">
+    </div>
+
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content" id="modal-content">
+            <div class="modal-message" id="modal-message"></div>
+            <button class="modal-close-btn" id="modal-close-btn">확인</button>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // ⭐ 서버에서 전달받은 사용자 고유의 시작 시간
+        const SERVER_CURRENT_TIME = /*[[${currentTime}]]*/ 0;
+        const SERVER_START_TIME = /*[[${startTime}]]*/ 0;
+        // userId를 서버에서 Thymeleaf를 통해 직접 받도록 설정
+        const USER_ID_FROM_SERVER = /*[[${userId}]]*/ null; 
+        // 브라우저 시간과 서버 시간의 차이 (오차 보정용)
+        const TIME_OFFSET = Date.now() - SERVER_CURRENT_TIME;
+        const CLOCK_INTERVAL = 1000;
+        const INITIAL_LOCK_DURATION_MS = 60 * 1000;
+        const ACTIVE_WINDOW_DURATION_MS = 5 * 60 * 1000;
+        const START_TIME_KEY = 'enrollmentStartTime';
+
+        const timerDisplay = document.getElementById('timer-display');
+        const buttons = document.querySelectorAll('.class-btn');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalContent = document.getElementById('modal-content');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+         // userId 결정: 서버 변수 사용
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = USER_ID_FROM_SERVER || urlParams.get('userId');
+    
+
+        // 버튼 클릭 이벤트
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const className = this.textContent;
+                
+                // 이전 선택 제거
+                buttons.forEach(b => b.classList.remove('selected'));
+                // 현재 버튼 선택
+                this.classList.add('selected');
+                
+                // 클릭 애니메이션
+                this.style.transform = 'scale(0.97)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                    handleEnrollment(className);
+                }, 200);
+            });
+        });
+
+        // 수강 신청 처리 함수 (DB 저장 포함)
+        async function handleEnrollment(className) {
+            if (!userId) {
+                console.error("User ID is missing. Cannot proceed with enrollment.");
+                alert("사용자 정보가 없어 메인 페이지로 이동합니다.");
+                window.location.href = '/test'; 
+                return;
+            }
+            const redirectUrl = `?userId=${userId}`;
+
+            const random = Math.random() * 100;
+
+
+            // ⭐ 핵심 로직: 페이지 이동 직전에 select 페이지 기록을 지웁니다.
+            function removeCurrentHistoryAndRedirect(path) {
+                // 현재 select 페이지의 기록을 비웁니다.
+                // 이 동작으로 인해 결과 페이지에서 '뒤로 가기'를 누르면, 
+                // 이 select 페이지가 아닌 그 전 페이지(대부분 /test 또는 /login)로 이동합니다.
+                window.history.replaceState(null, null, path + redirectUrl); 
+                // 새 페이지로 이동합니다. (이때 결과 페이지는 히스토리 스택에 남습니다.)
+                window.location.href = path + redirectUrl; 
+            }
+
+
+            if (random < 0.5) {
+                // 0.5% - 성공! DB에 저장
+                try {
+                    const response = await fetch('/api/enroll', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            courseName: className
+                        })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // DB 저장 성공 -> clear 페이지로 이동
+                        removeCurrentHistoryAndRedirect('/clear');
+                        setTimeout(() => {
+                            removeCurrentHistoryAndRedirect('/test');
+                        }, 2000);
+                    } else {
+                        // DB 저장 실패 (이미 신청했거나 오류)
+                        showModal('full', '이미 신청한 강의이거나<br>오류가 발생했습니다.');
+                    }
+                } catch (error) {
+                    console.error('수강신청 오류:', error);
+                    showModal('full', '서버 오류가<br>발생했습니다.');
+                }
+            }else if (random < 5.5) {
+                // 5% - 네트워크 에러
+                removeCurrentHistoryAndRedirect('/networkError');
+            } else if (random < 20.5) {
+                // 15% - 인원 가득참
+                showModal('full', `선택한 과목의 인원이<br>가득 찼습니다.`);
+            } else if (random < 50) {
+                // 29.5% - 매크로 감지
+                removeCurrentHistoryAndRedirect('/mecro');
+            }  else {
+                // 50% - 성공 페이지로 이동 (DB 저장 없음)
+                removeCurrentHistoryAndRedirect('/celebrate');
+            }
+        }
+
+        // 모달 표시 함수
+        function showModal(type, message) {
+            modalContent.className = 'modal-content ' + type;
+            modalMessage.innerHTML = message;
+            modalOverlay.classList.add('active');
+        }
+
+        // 모달 닫기
+        modalCloseBtn.addEventListener('click', () => {
+            modalOverlay.classList.remove('active');
+        });
+
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) {
+                modalOverlay.classList.remove('active');
+            }
+        });
+
+        // ⭐ 타이머 관리 (DB에 저장된 사용자 고유의 시간 기반 로직)
+        function manageEnrollmentTimer() {
+            // 서버와 동기화된 현재 시간 계산
+            const now = Date.now() - TIME_OFFSET;
+            const startTime = SERVER_START_TIME;
+
+            const lockEndTime = startTime + INITIAL_LOCK_DURATION_MS;
+            const activeEndTime = lockEndTime + ACTIVE_WINDOW_DURATION_MS;
+
+            if (startTime === 0) {
+                 // 서버에서 startTime이 0으로 오면 (시간 설정 안됨), 타이머를 표시하지 않습니다.
+                 timerDisplay.textContent = '---:---';
+                 return;
+            }
+
+            if (now < lockEndTime) {
+                // 대기 기간 (1분)
+                const remaining = Math.ceil((lockEndTime - now) / 1000);
+                timerDisplay.textContent = `00:${String(remaining).padStart(2, '0')}`;
+            } else if (now >= lockEndTime && now < activeEndTime) {
+                // 활성 기간 (5분)
+                const remaining = Math.ceil((activeEndTime - now) / 1000);
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                // 마감     
+                timerDisplay.textContent = '00:00';
+                // 선택 불가 처리
+                buttons.forEach(btn => {
+                    btn.style.pointerEvents = 'none';
+                    btn.style.opacity = '0.5';
+                });
+            }
+        }
+
+        // 타이머 시작
+        manageEnrollmentTimer();
+        setInterval(manageEnrollmentTimer, CLOCK_INTERVAL);
+    </script>
+</body>
+</html>

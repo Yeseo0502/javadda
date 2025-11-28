@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Screen</title>
+    <style>
+        /* 폰트 정의 */
+        @font-face {
+            font-family: 'PFStardustS';
+            src: url('/fonts/PFStardustS.ttf') format('truetype');
+        }
+
+        /* PFStardust 3.0 EXTRABOLD 글꼴을 불러옵니다. */
+        @font-face {
+            font-family: 'PFStardustExtraBold';
+            src: url('/fonts/PFStardustExtraBold.ttf') format('truetype');
+        }
+
+        * {
+            font-family: 'PFStardustS';
+        }
+
+        body {
+            /* 폰트 적용 */
+            background-color: #e8f5e9;
+            /* Light green background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .title {
+            font-size: 5em;
+            font-family: 'PFStardustExtraBold';
+            color: #388e3c;
+            /* Darker green for text */
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            display: flex;
+            /* Flexbox로 자바따와 이미지를 나란히 배치 */
+            align-items: center;
+            /* 세로 중앙 정렬 */
+            gap: 10px;
+            /* 텍스트와 이미지 사이 간격 */
+        }
+
+        .title img {
+            width: 80px;
+            /* Adjust size of the emoji */
+            height: auto;
+            /* 비율 유지 */
+            transform: rotate(-15deg);
+            /* Slight tilt */
+            margin-left: 10px;
+            /* 텍스트와의 간격 추가 */
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            /* Space between buttons */
+        }
+
+        .button {
+            background-color: #558b2f;
+            /* Olive green */
+            color: white;
+            padding: 20px 40px;
+            font-size: 1.5em;
+            border: none;
+            border-radius: 15px;
+            /* Rounded corners */
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 200px;
+            /* 버튼의 고정 너비 설정 */
+            height: 80px;
+            /* 버튼의 고정 높이 설정 */
+            box-sizing: border-box;
+            /* 패딩과 보더가 너비/높이에 포함되도록 */
+        }
+
+        .button:hover {
+            background-color: #33691e;
+            /* Darker green on hover */
+            transform: translateY(-5px);
+            /* Slight lift effect */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="title">
+        자바따!
+        <img src="/images/sunglass.png" alt="Happy emoji with sunglasses"/>
+
+    </div>
+
+    <div class="button-container">
+        <button class="button" id="login-button">로그인</button>
+        <button class="button" id="signup-button">회원가입</button>
+    </div>
+
+    <script>
+        document.getElementById('login-button').addEventListener('click', function () {
+            window.location.href = '/login';
+        });
+
+        document.getElementById('signup-button').addEventListener('click', function () {
+            window.location.href = '/hello';
+        });
+    </script>
+
+</body>
+
+</html>

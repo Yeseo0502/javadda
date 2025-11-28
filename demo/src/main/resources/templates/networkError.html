@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>네트워크 오류</title>
+    <style>
+        @font-face {
+            font-family: 'PFStardustS';
+            src: url('/fonts/PFStardustS.ttf') format('truetype');
+        }
+
+        @font-face {
+            font-family: 'PFStardustExtraBold';
+            src: url('/fonts/PFStardustExtraBold.ttf') format('truetype');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'PFStardustS', sans-serif;
+            /* 배경색을 오류에 맞게 변경 */
+            background: linear-gradient(135deg, #FAD0C4 0%, #F5A7A7 100%); 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            max-width: 800px; /* 컨테이너 크기 조정 */
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 5px solid #FF4444; /* 테두리 색상 */
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            /* 고정 위치 대신 컨테이너 내에서 배치 */
+            margin-bottom: 50px; 
+        }
+
+        .logo {
+            font-family: 'PFStardustExtraBold', sans-serif;
+            font-size: 56px;
+            color: #FF0000; /* 로고 색상 오류에 맞게 변경 */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .time {
+            font-family: 'PFStardustExtraBold', sans-serif;
+            font-size: 64px;
+            color: #6b8e5f;
+        }
+
+
+        .error-title {
+            font-family: 'PFStardustExtraBold', sans-serif;
+            font-size: 72px;
+            color: #ff0000;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(255, 0, 0, 0.2);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .error-message {
+            font-family: 'PFStardustExtraBold', sans-serif;
+            font-size: 42px;
+            color: #ff4444;
+            margin-bottom: 40px;
+        }
+
+        .character {
+            position: absolute;
+            bottom: -150px; /* 컨테이너 아래로 배치 */
+            right: 50px;
+            width: 220px;
+            height: auto;
+            animation: shake 0.5s ease-in-out infinite;
+        }
+
+        .character-img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0) rotate(0deg);
+            }
+            25% {
+                transform: translateX(-5px) rotate(-2deg);
+            }
+            75% {
+                transform: translateX(5px) rotate(2deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 36px;
+            }
+
+            .time {
+                font-size: 42px;
+            }
+
+            .error-title {
+                font-size: 48px;
+            }
+
+            .error-message {
+                font-size: 28px;
+            }
+
+            .character {
+                width: 150px;
+                bottom: -100px;
+                right: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">자바따!</div>
+            <div class="time" id="clock">05:00</div> 
+        </div>
+
+        <div class="error-content">
+            <h1 class="error-title">네트워크 오류!</h1>
+            <p class="error-message">다시 로그인 하세요!! <br>3초 뒤 자동으로 이동됩니다.</p>
+        </div>
+        
+        <div class="character">
+            <img src="/images/sunglass.png" alt="캐릭터" class="character-img">
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // 🚨 뒤로 가기 차단 및 로그인 강제 이동 로직 🚨
+        window.history.pushState(null, null, window.location.href); 
+        
+        window.addEventListener('popstate', function() {
+            // 뒤로 가기가 발생하면 무조건 로그인 페이지로 이동시킵니다.
+            window.location.replace('/login'); 
+        });
+        
+        // ⭐ 서버에서 전달받은 사용자 고유의 시간 변수
+        const SERVER_CURRENT_TIME = /*[[${currentTime}]]*/ 0;
+        const SERVER_START_TIME = /*[[${startTime}]]*/ 0;
+        
+        // 브라우저 시간과 서버 시간의 차이 (오차 보정용)
+        const TIME_OFFSET = Date.now() - SERVER_CURRENT_TIME;
+
+        // select.html에서 가져온 상수
+        const CLOCK_INTERVAL = 1000;
+        const INITIAL_LOCK_DURATION_MS = 60 * 1000;
+        const ACTIVE_WINDOW_DURATION_MS = 5 * 60 * 1000;
+
+        const timerDisplay = document.getElementById('clock'); // clock ID 사용
+
+        // ⭐ select.html의 카운트다운 로직으로 대체
+        function manageEnrollmentTimer() {
+            const now = Date.now() - TIME_OFFSET;
+            const startTime = SERVER_START_TIME;
+
+            const lockEndTime = startTime + INITIAL_LOCK_DURATION_MS;
+            const activeEndTime = lockEndTime + ACTIVE_WINDOW_DURATION_MS;
+
+            if (startTime === 0) {
+                 timerDisplay.textContent = '---:---';
+                 return;
+            }
+
+            if (now < lockEndTime) {
+                // 대기 기간 (1분)
+                const remaining = Math.ceil((lockEndTime - now) / 1000);
+                timerDisplay.textContent = `00:${String(remaining).padStart(2, '0')}`;
+            } else if (now >= lockEndTime && now < activeEndTime) {
+                // 활성 기간 (5분)
+                const remaining = Math.ceil((activeEndTime - now) / 1000);
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            } else {
+                // 마감     
+                timerDisplay.textContent = '00:00';
+            }
+        }
+        
+        // 타이머 시작
+        manageEnrollmentTimer();
+        setInterval(manageEnrollmentTimer, CLOCK_INTERVAL);
+
+        // 3초 후 로그인 페이지로 자동 이동 (window.location.replace 사용)
+        setTimeout(function() {
+            window.location.replace('/login'); 
+        }, 3000);
+    </script>
+</body>
+</html>
